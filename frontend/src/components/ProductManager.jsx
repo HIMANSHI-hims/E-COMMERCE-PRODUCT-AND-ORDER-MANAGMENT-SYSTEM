@@ -1,3 +1,4 @@
+import { isMock } from '../services/api.js'
 import { useState } from 'react'
 import { Pencil, Trash2, Plus, Search, ShieldAlert } from 'lucide-react'
 import Field from './Field.jsx'
@@ -45,7 +46,7 @@ export default function ProductManager({ allowDelete = false }) {
         <h2 id="pm-title">{allowDelete ? 'Product management' : 'Stock levels'}</h2>
         <button className="btn btn-dark" onClick={() => { setErrs({}); setForm(empty) }}><Plus size={16} /> Add Product</button>
       </div>
-      <p className="note"><ShieldAlert size={16} /> Changes are kept in this browser session only. They are not saved to Oracle until the API is connected.</p>
+      <p className="note"><ShieldAlert size={16} /> {isMock ? 'Changes are kept in this browser session only and are not saved to a database.' : 'Changes are saved to the Oracle database.'}</p>
 
       {form && (
         <form className="card form" onSubmit={submit} noValidate>

@@ -3,6 +3,7 @@ import { Routes, Route, useLocation, Link } from 'react-router-dom'
 import Navbar from './components/Navbar.jsx'
 import Footer from './components/Footer.jsx'
 import PageHeader from './components/PageHeader.jsx'
+import AdminGate from './components/AdminGate.jsx'
 import Home from './pages/Home.jsx'
 import Products from './pages/Products.jsx'
 import PlaceOrder from './pages/PlaceOrder.jsx'
@@ -13,7 +14,9 @@ import { useStore } from './context/StoreContext.jsx'
 
 function ScrollTop() {
   const { pathname } = useLocation()
-  useEffect(() => window.scrollTo(0, 0), [pathname])
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [pathname])
   return null
 }
 
@@ -39,8 +42,8 @@ export default function App() {
           <Route path="/products" element={<Products />} />
           <Route path="/order" element={<PlaceOrder />} />
           <Route path="/orders" element={<ViewOrders />} />
-          <Route path="/inventory" element={<Inventory />} />
-          <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/inventory" element={<AdminGate><Inventory /></AdminGate>} />
+          <Route path="/admin" element={<AdminGate><AdminDashboard /></AdminGate>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>

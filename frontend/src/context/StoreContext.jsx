@@ -7,6 +7,7 @@ export const useStore = () => useContext(Ctx)
 export function StoreProvider({ children }) {
   const [products, setProducts] = useState([])
   const [orders, setOrders] = useState([])
+  const [stats, setStats] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [toast, setToast] = useState(null)
@@ -18,20 +19,31 @@ export function StoreProvider({ children }) {
     timer.current = setTimeout(() => setToast(null), 2800)
   }, [])
 
+  // Re-read products and orders from the database.
+  const sync = useCallback(async () => {
+    const [p, o] = await Promise.all([api.getProducts(), api.getOrders()])
+    setProducts(p)
+    setOrders(o)
+  }, [])
+
   const load = useCallback(async () => {
     setLoading(true)
     setError('')
     try {
-      const [p, o] = await Promise.all([api.getProducts(), api.getOrders()])
-      setProducts(p)
-      setOrders(o)
+      await sync()
     } catch (e) {
       setError(e.message || 'Could not load data.')
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [sync])
   useEffect(() => { load() }, [load])
+
+  const loadStats = useCallback(async () => {
+    const s = await api.getAdminStats()
+    setStats(s)
+    return s
+  }, [])
 
   const categories = useMemo(() => [...new Set(products.map((p) => p.category))].sort(), [products])
 
@@ -55,6 +67,7 @@ export function StoreProvider({ children }) {
       total: payload.total,
       status: 'Pending',
       payment: payload.payment,
+      paymentStatus: 'Pending',
       items: payload.items
     }
     setOrders((l) => [order, ...l])
@@ -67,8 +80,22 @@ export function StoreProvider({ children }) {
     return order
   }
 
+  // Admin: change order status. With the real API we re-read, so restocked quantities are exact.
+  const setOrderStatus = async (id, status) => {
+    await api.updateOrderStatus(id, status)
+    if (api.isMock) setOrders((l) => l.map((o) => (o.id === id ? { ...o, status } : o)))
+    else await sync()
+  }
+  const setPaymentStatus = async (id, status) => {
+    await api.updatePaymentStatus(id, status)
+    setOrders((l) => l.map((o) => (o.id === id ? { ...o, paymentStatus: status } : o)))
+  }
+
   return (
-    <Ctx.Provider value={{ products, orders, categories, loading, error, load, toast, notify, saveProduct, removeProduct, placeOrder }}>
+    <Ctx.Provider value={{
+      products, orders, categories, stats, loading, error, load, loadStats, toast, notify,
+      saveProduct, removeProduct, placeOrder, setOrderStatus, setPaymentStatus
+    }}>
       {children}
     </Ctx.Provider>
   )

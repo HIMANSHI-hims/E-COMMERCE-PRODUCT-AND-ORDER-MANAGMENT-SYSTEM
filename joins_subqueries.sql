@@ -1,3 +1,4 @@
+--query1
 SELECT
     o.order_id,
     c.customer_name,
@@ -8,6 +9,7 @@ FROM ORDERS o
 JOIN CUSTOMERS c
     ON o.customer_id = c.customer_id
 ORDER BY o.order_id;
+--query2
 SELECT
     p.product_id,
     p.product_name,
@@ -19,6 +21,7 @@ FROM PRODUCTS p
 JOIN CATEGORIES c
     ON p.category_id = c.category_id
 ORDER BY c.category_name, p.product_name;
+--query3
 SELECT
     oi.order_id,
     p.product_name,
@@ -29,6 +32,7 @@ FROM ORDER_ITEMS oi
 JOIN PRODUCTS p
     ON oi.product_id = p.product_id
 ORDER BY oi.order_id;
+--query4
 SELECT
     o.order_id,
     c.customer_name,
@@ -45,12 +49,14 @@ JOIN ORDER_ITEMS oi
 JOIN PRODUCTS p
     ON oi.product_id = p.product_id
 ORDER BY o.order_id;
+--query5
 SELECT product_name, price
 FROM PRODUCTS
 WHERE price > (
     SELECT AVG(price)
     FROM PRODUCTS
 );
+--query6
 SELECT customer_id, customer_name
 FROM CUSTOMERS
 WHERE customer_id NOT IN (

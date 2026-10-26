@@ -91,6 +91,8 @@ export const updateOrderStatus = (id, status) =>
   useMock ? wait({}) : patch(`/orders/${id}/status`, status)
 export const updatePaymentStatus = (id, status) =>
   useMock ? wait({}) : patch(`/orders/${id}/payment`, status)
+export const payOrder = (id) =>
+  useMock ? wait({}) : request(`/orders/${id}/pay`, { method: 'POST' }, 'customer')
 
 // Admin: products and statistics
 export const saveProduct = (p, isNew) =>

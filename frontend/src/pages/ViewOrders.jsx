@@ -1,8 +1,13 @@
 import { useCallback, useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { Search } from 'lucide-react'
 import PageHeader from '../components/PageHeader.jsx'
 import * as api from '../services/api.js'
-import { inr, fmtDate } from '../utils.js'
+import { inr, fmtDate, payLabel } from '../utils.js'
+
+// An online order that still needs the customer's payment.
+const needsPayment = (o) =>
+  Boolean(o.payment) && o.payment !== 'Cash' && o.paymentStatus !== 'Completed' && o.status !== 'Cancelled'
 
 export default function ViewOrders() {
   const [orders, setOrders] = useState([])
@@ -54,8 +59,11 @@ export default function ViewOrders() {
                 <tr key={o.id}>
                   <td>{o.id}</td><td>{fmtDate(o.date)}</td><td>{inr(o.total)}</td>
                   <td><span className={`pill ${o.status}`}>{o.status}</span></td>
-                  <td>{o.payment || 'None'}{o.paymentStatus ? `, ${o.paymentStatus}` : ''}</td>
-                  <td><button className="btn btn-outline btn-sm" onClick={() => setSel(o.id)}>View</button></td>
+                  <td>{payLabel(o.payment) || 'None'}{o.paymentStatus ? `, ${o.paymentStatus}` : ''}</td>
+                  <td className="actions">
+                    <button className="btn btn-outline btn-sm" onClick={() => setSel(o.id)}>View</button>
+                    {needsPayment(o) && <Link className="btn btn-dark btn-sm" to={`/pay/${o.id}`}>Pay now</Link>}
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -69,7 +77,7 @@ export default function ViewOrders() {
             <h2 id="od">Order {open.id}</h2>
             <button className="btn btn-outline btn-sm" onClick={() => setSel(null)}>Close</button>
           </div>
-          <p className="muted">Placed {fmtDate(open.date)}. Order status: {open.status}. Payment: {open.payment || 'None'}{open.paymentStatus ? ` (${open.paymentStatus})` : ''}.</p>
+          <p className="muted">Placed {fmtDate(open.date)}. Order status: {open.status}. Payment: {payLabel(open.payment) || 'None'}{open.paymentStatus ? ` (${open.paymentStatus})` : ''}.</p>
           <div className="tw">
             <table>
               <thead><tr><th>Item</th><th>Qty</th><th>Unit price</th><th>Line total</th></tr></thead>

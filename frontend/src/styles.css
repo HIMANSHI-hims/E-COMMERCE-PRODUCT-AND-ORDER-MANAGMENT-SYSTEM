@@ -161,3 +161,13 @@ fieldset{border:0;padding:0}
 .who{font-size:.85rem;color:var(--muted)}
 .deliver{display:flex;flex-direction:column;gap:.15rem;padding:.8rem 1rem;border-left:3px solid var(--champagne);background:var(--ivory);border-radius:0 var(--r) var(--r) 0}
 @media(max-width:700px){.who{display:none}}
+/* payment page */
+.pay-card{padding:2rem;display:flex;flex-direction:column;gap:1.25rem;border-top:3px solid var(--champagne)}
+.pay-amount{font-family:var(--serif);font-size:2.6rem;font-weight:600;line-height:1}
+.pay-items{list-style:none;padding:0;display:flex;flex-direction:column;gap:.35rem;font-size:.9rem}
+.pay-items li{display:flex;justify-content:space-between;gap:1rem}
+.pay-meta{display:flex;flex-direction:column;gap:.5rem;font-size:.92rem}
+.pay-meta div{display:flex;justify-content:space-between;gap:1rem;padding-bottom:.5rem;border-bottom:1px solid var(--line)}
+.pay-meta span:first-child{color:var(--muted)}
+.pill.Completed{background:rgba(137,145,122,.28)}
+.pill.Failed{background:rgba(138,47,47,.12);color:#8a2f2f}

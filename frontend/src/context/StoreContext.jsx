@@ -96,11 +96,15 @@ export function StoreProvider({ children }) {
     await api.updatePaymentStatus(id, status)
     setOrders((l) => l.map((o) => (o.id === id ? { ...o, paymentStatus: status } : o)))
   }
+    const payOrder = async (id) => {
+    await api.payOrder(id)
+    setOrders((l) => l.map((o) => (o.id === id ? { ...o, paymentStatus: 'Completed' } : o)))
+  }
 
   return (
     <Ctx.Provider value={{
       products, orders, categories, stats, loading, error, load, loadOrders, loadStats, toast, notify,
-      saveProduct, removeProduct, placeOrder, setOrderStatus, setPaymentStatus
+      saveProduct, removeProduct, placeOrder, setOrderStatus, setPaymentStatus,payOrder
     }}>
       {children}
     </Ctx.Provider>

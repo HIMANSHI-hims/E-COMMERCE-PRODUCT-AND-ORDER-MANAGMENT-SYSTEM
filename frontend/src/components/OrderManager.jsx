@@ -1,10 +1,13 @@
 import { useState } from 'react'
 import { Search } from 'lucide-react'
 import { useStore } from '../context/StoreContext.jsx'
-import { inr, fmtDate } from '../utils.js'
+import { inr, fmtDate, payLabel } from '../utils.js'
 
 const ORDER = ['Pending', 'Shipped', 'Delivered', 'Cancelled']
 const PAY = ['Pending', 'Completed', 'Failed']
+
+// Except for Cash on Delivery, the order status is locked until the payment is completed.
+const locked = (o) => Boolean(o.payment) && o.payment !== 'Cash' && o.paymentStatus !== 'Completed'
 
 export default function OrderManager() {
   const { orders, setOrderStatus, setPaymentStatus, notify } = useStore()
@@ -42,21 +45,30 @@ export default function OrderManager() {
                 <tr key={o.id}>
                   <td>{o.id}</td><td>{fmtDate(o.date)}</td><td>{o.customer}</td><td>{inr(o.total)}</td>
                   <td>
-                    <select className="sel-sm" aria-label={`Status of ${o.id}`} value={o.status}
-                      disabled={busy === o.id || o.status === 'Cancelled'}
-                      onChange={(e) => run(o.id, () => setOrderStatus(o.id, e.target.value), `${o.id} is now ${e.target.value}.`)}>
-                      {ORDER.map((s) => <option key={s} disabled={s === 'Cancelled' && o.status === 'Delivered'}>{s}</option>)}
-                    </select>
+                    {locked(o) ? (
+                      <>
+                        <span className={`pill ${o.status}`}>{o.status}</span>
+                        <span className="muted small ml">Awaiting payment</span>
+                      </>
+                    ) : (
+                      <select className="sel-sm" aria-label={`Status of ${o.id}`} value={o.status}
+                        disabled={busy === o.id || o.status === 'Cancelled'}
+                        onChange={(e) => run(o.id, () => setOrderStatus(o.id, e.target.value), `${o.id} is now ${e.target.value}.`)}>
+                        {ORDER.map((s) => <option key={s} disabled={s === 'Cancelled' && o.status === 'Delivered'}>{s}</option>)}
+                      </select>
+                    )}
                   </td>
-                  <td>{o.payment || 'None'}</td>
+                  <td>{payLabel(o.payment) || 'None'}</td>
                   <td>
-                    {o.paymentStatus ? (
+                    {!o.paymentStatus ? '–' : o.payment === 'Cash' ? (
                       <select className="sel-sm" aria-label={`Payment status of ${o.id}`} value={o.paymentStatus}
                         disabled={busy === 'p' + o.id}
                         onChange={(e) => run('p' + o.id, () => setPaymentStatus(o.id, e.target.value), `Payment for ${o.id} is now ${e.target.value}.`)}>
                         {PAY.map((s) => <option key={s}>{s}</option>)}
                       </select>
-                    ) : '–'}
+                    ) : (
+                      <span className={`pill ${o.paymentStatus}`}>{o.paymentStatus}</span>
+                    )}
                   </td>
                 </tr>
               ))}

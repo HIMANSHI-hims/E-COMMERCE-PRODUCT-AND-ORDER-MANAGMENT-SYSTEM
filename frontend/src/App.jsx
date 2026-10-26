@@ -8,6 +8,7 @@ import CustomerGate from './components/CustomerGate.jsx'
 import Home from './pages/Home.jsx'
 import Products from './pages/Products.jsx'
 import PlaceOrder from './pages/PlaceOrder.jsx'
+import PayOrder from './pages/PayOrder.jsx'
 import ViewOrders from './pages/ViewOrders.jsx'
 import Inventory from './pages/Inventory.jsx'
 import AdminDashboard from './pages/AdminDashboard.jsx'
@@ -45,6 +46,7 @@ export default function App() {
           <Route path="/" element={shop(<Home />)} />
           <Route path="/products" element={shop(<Products />)} />
           <Route path="/order" element={shop(<PlaceOrder />)} />
+          <Route path="/pay/:id" element={shop(<PayOrder />)} />
           <Route path="/orders" element={shop(<ViewOrders />)} />
           <Route path="/inventory" element={<AdminGate><Inventory /></AdminGate>} />
           <Route path="/admin" element={<AdminGate><AdminDashboard /></AdminGate>} />

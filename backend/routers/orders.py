@@ -8,6 +8,7 @@ router = APIRouter(tags=["orders"])
 
 ORDER_STATUSES = ("Pending", "Shipped", "Delivered", "Cancelled")
 PAYMENT_STATUSES = ("Pending", "Completed", "Failed")
+COD = "Cash"  # Cash on Delivery is stored as 'Cash'
 
 ORDERS_SQL = """
     SELECT o.order_id, TO_CHAR(o.order_date, 'YYYY-MM-DD') AS order_date,
@@ -125,9 +126,47 @@ def create_order(order: OrderIn, claims=Depends(require_customer), conn=Depends(
     return {"orderId": f"ORD-{order_id}", "total": total}
 
 
+@router.post("/orders/{order_ref}/pay")
+def pay_for_order(order_ref: str, claims=Depends(require_customer), conn=Depends(get_conn)):
+    """Customer pays for their own online order. Simulated: no real gateway is called."""
+    oid = parse_order_id(order_ref)
+    try:
+        with conn.cursor() as cur:
+            cur.execute(
+                """SELECT o.status, pay.payment_method, pay.payment_status
+                   FROM orders o
+                   JOIN payments pay ON pay.order_id = o.order_id
+                   WHERE o.order_id = :id AND o.customer_id = :cid
+                   FOR UPDATE""",
+                {"id": oid, "cid": int(claims["sub"])},
+            )
+            row = cur.fetchone()
+            if not row:
+                raise HTTPException(404, "Order not found.")
+            status, method, pstatus = row
+            if status == "Cancelled":
+                raise HTTPException(409, "This order was cancelled, so it can't be paid.")
+            if method == COD:
+                raise HTTPException(409, "Cash on Delivery orders are paid when the order is delivered.")
+            if pstatus != "Completed":
+                cur.execute(
+                    """UPDATE payments SET payment_status = 'Completed', payment_date = SYSDATE
+                       WHERE order_id = :id""",
+                    {"id": oid},
+                )
+        conn.commit()
+    except HTTPException:
+        conn.rollback()
+        raise
+    except oracledb.DatabaseError as e:
+        conn.rollback()
+        raise HTTPException(400, f"Could not complete payment: {e}")
+    return {"id": f"ORD-{oid}", "paymentStatus": "Completed"}
+
+
 @router.patch("/orders/{order_ref}/status", dependencies=[Depends(require_admin)])
 def update_order_status(order_ref: str, body: StatusIn, conn=Depends(get_conn)):
-    """Change an order's status. Cancelling returns the items to stock."""
+    """Change an order's status. Online orders unlock only after payment. Cancelling returns items to stock."""
     oid = parse_order_id(order_ref)
     new = body.status
     if new not in ORDER_STATUSES:
@@ -141,6 +180,19 @@ def update_order_status(order_ref: str, body: StatusIn, conn=Depends(get_conn)):
             old = row[0]
             if old == new:
                 return {"id": f"ORD-{oid}", "status": new}
+
+            # Rule: except for Cash on Delivery, the status can change only after payment is completed.
+            cur.execute(
+                "SELECT payment_method, payment_status FROM payments WHERE order_id = :id",
+                {"id": oid},
+            )
+            pay = cur.fetchone()
+            if pay and pay[0] != COD and pay[1] != "Completed":
+                raise HTTPException(
+                    409,
+                    "Payment is not completed yet. The status of this order can be changed only after the customer pays.",
+                )
+
             if old == "Cancelled":
                 raise HTTPException(409, "A cancelled order can't be reopened.")
             if old == "Delivered" and new == "Cancelled":
@@ -173,18 +225,27 @@ def update_order_status(order_ref: str, body: StatusIn, conn=Depends(get_conn)):
 
 @router.patch("/orders/{order_ref}/payment", dependencies=[Depends(require_admin)])
 def update_payment_status(order_ref: str, body: StatusIn, conn=Depends(get_conn)):
+    """Admin can change the payment status of Cash on Delivery orders only.
+    Online payments are completed by the customer on the payment page."""
     oid = parse_order_id(order_ref)
     if body.status not in PAYMENT_STATUSES:
         raise HTTPException(400, f"Payment status must be one of: {', '.join(PAYMENT_STATUSES)}.")
     try:
         with conn.cursor() as cur:
+            cur.execute("SELECT payment_method FROM payments WHERE order_id = :id FOR UPDATE", {"id": oid})
+            row = cur.fetchone()
+            if not row:
+                raise HTTPException(404, "No payment found for this order.")
+            if row[0] != COD:
+                raise HTTPException(
+                    409,
+                    "Online payments are completed by the customer. Only Cash on Delivery payments can be changed here.",
+                )
             cur.execute("UPDATE payments SET payment_status = :s WHERE order_id = :id",
                         {"s": body.status, "id": oid})
-            if cur.rowcount == 0:
-                conn.rollback()
-                raise HTTPException(404, "No payment found for this order.")
         conn.commit()
     except HTTPException:
+        conn.rollback()
         raise
     except oracledb.DatabaseError as e:
         conn.rollback()

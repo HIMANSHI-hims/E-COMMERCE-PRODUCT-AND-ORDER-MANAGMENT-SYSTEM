@@ -1,12 +1,12 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { Minus, Plus, Trash2, CheckCircle2 } from 'lucide-react'
 import PageHeader from '../components/PageHeader.jsx'
 import { useCart } from '../context/CartContext.jsx'
 import { useStore } from '../context/StoreContext.jsx'
 import { useCustomer } from '../context/CustomerContext.jsx'
 import { isMock } from '../services/api.js'
-import { inr } from '../utils.js'
+import { inr, payLabel } from '../utils.js'
 
 const METHODS = ['UPI', 'Card', 'Net Banking', 'Cash']
 
@@ -14,6 +14,7 @@ export default function PlaceOrder() {
   const { items, setQty, remove, clear, subtotal } = useCart()
   const { products, placeOrder, notify } = useStore()
   const { customer } = useCustomer()
+  const navigate = useNavigate()
   const [pay, setPay] = useState('')
   const [errs, setErrs] = useState({})
   const [done, setDone] = useState(null)
@@ -35,7 +36,9 @@ export default function PlaceOrder() {
         items: items.map((i) => ({ productId: i.id, name: i.name, qty: i.qty, price: i.price }))
       })
       clear()
-      setDone(order)
+      // Cash on Delivery is paid later; every other method goes to the payment page.
+      if (pay === 'Cash') setDone(order)
+      else navigate(`/pay/${order.id}`, { state: { order } })
     } catch (x) { notify(x.message, 'err') } finally { setBusy(false) }
   }
 
@@ -45,7 +48,7 @@ export default function PlaceOrder() {
         <div className="card confirm">
           <CheckCircle2 size={40} />
           <h1>Order placed</h1>
-          <p>Thank you, {done.customer}. Your order <strong>{done.id}</strong> for <strong>{inr(done.total)}</strong> ({done.payment}) is recorded as Pending.</p>
+          <p>Thank you, {done.customer}. Your order <strong>{done.id}</strong> for <strong>{inr(done.total)}</strong> is placed with Cash on Delivery. Please pay when it arrives.</p>
           {isMock && <p className="note">Demo order: it was created in the browser only and nothing was saved to a database.</p>}
           <div className="row-gap center-row">
             <Link className="btn btn-dark" to="/orders">View Orders</Link>
@@ -107,12 +110,19 @@ export default function PlaceOrder() {
             <legend>Payment method</legend>
             <div className="methods">
               {METHODS.map((m) => (
-                <label key={m} className={pay === m ? 'on' : ''}><input type="radio" name="pay" value={m} checked={pay === m} onChange={() => setPay(m)} />{m}</label>
+                <label key={m} className={pay === m ? 'on' : ''}><input type="radio" name="pay" value={m} checked={pay === m} onChange={() => setPay(m)} />{payLabel(m)}</label>
               ))}
             </div>
+            {pay && (
+              <p className="muted small" style={{ marginTop: '.5rem' }}>
+                {pay === 'Cash' ? 'You will pay in cash when your order is delivered.' : 'You will pay on the next screen.'}
+              </p>
+            )}
             {errs.pay && <span className="ferr" role="alert">{errs.pay}</span>}
           </fieldset>
-          <button className="btn btn-dark" type="submit" disabled={busy}>{busy ? 'Placing order…' : 'Place Order'}</button>
+          <button className="btn btn-dark" type="submit" disabled={busy}>
+            {busy ? 'Placing order…' : pay && pay !== 'Cash' ? 'Place Order and Pay' : 'Place Order'}
+          </button>
           {isMock && <p className="muted small">This is a frontend demonstration. No real order is created.</p>}
         </form>
       </div>

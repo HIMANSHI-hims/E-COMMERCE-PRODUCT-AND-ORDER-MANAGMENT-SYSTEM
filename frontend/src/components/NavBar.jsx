@@ -2,12 +2,14 @@ import { useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
 import { ShoppingCart, Menu, X } from 'lucide-react'
 import { useCart } from '../context/CartContext.jsx'
+import { useCustomer } from '../context/CustomerContext.jsx'
 
 const links = [['/', 'Home'], ['/products', 'Products'], ['/order', 'Place Order'], ['/orders', 'View Orders'], ['/inventory', 'Inventory']]
 
 export default function Navbar() {
   const [open, setOpen] = useState(false)
   const { count } = useCart()
+  const { customer, signOut } = useCustomer()
   const close = () => setOpen(false)
   return (
     <header className="nav">
@@ -20,6 +22,12 @@ export default function Navbar() {
           <NavLink to="/admin" className="admin-link" onClick={close}>Admin Dashboard</NavLink>
         </nav>
         <div className="nav-actions">
+          {customer && (
+            <>
+              <span className="who">Hi, {customer.name.split(' ')[0]}</span>
+              <button className="btn btn-outline btn-sm" onClick={signOut}>Sign out</button>
+            </>
+          )}
           <Link to="/order" className="cart-btn" aria-label={`Cart, ${count} items`}>
             <ShoppingCart size={20} />
             {count > 0 && <span className="badge">{count}</span>}

@@ -19,11 +19,11 @@ export function StoreProvider({ children }) {
     timer.current = setTimeout(() => setToast(null), 2800)
   }, [])
 
-  // Re-read products and orders from the database.
+  // Products are public. The full order list is only loaded for a signed-in admin.
   const sync = useCallback(async () => {
-    const [p, o] = await Promise.all([api.getProducts(), api.getOrders()])
-    setProducts(p)
-    setOrders(o)
+    setProducts(await api.getProducts())
+    if (api.isMock) setOrders(await api.getOrders())
+    else if (api.getToken()) setOrders(await api.getOrders().catch(() => []))
   }, [])
 
   const load = useCallback(async () => {
@@ -38,6 +38,12 @@ export function StoreProvider({ children }) {
     }
   }, [sync])
   useEffect(() => { load() }, [load])
+
+  // Admin pages call this once they are signed in.
+  const loadOrders = useCallback(async () => {
+    if (api.isMock) return
+    setOrders(await api.getOrders())
+  }, [])
 
   const loadStats = useCallback(async () => {
     const s = await api.getAdminStats()
@@ -64,13 +70,13 @@ export function StoreProvider({ children }) {
       id: res.orderId ?? `ORD-${1000 + orders.length + 1}`,
       date: new Date().toISOString().slice(0, 10),
       customer: payload.customer.name,
-      total: payload.total,
+      total: res.total ?? payload.total,
       status: 'Pending',
       payment: payload.payment,
       paymentStatus: 'Pending',
       items: payload.items
     }
-    setOrders((l) => [order, ...l])
+    if (api.isMock) setOrders((l) => [order, ...l])
     setProducts((l) =>
       l.map((p) => {
         const i = payload.items.find((x) => x.productId === p.id)
@@ -93,7 +99,7 @@ export function StoreProvider({ children }) {
 
   return (
     <Ctx.Provider value={{
-      products, orders, categories, stats, loading, error, load, loadStats, toast, notify,
+      products, orders, categories, stats, loading, error, load, loadOrders, loadStats, toast, notify,
       saveProduct, removeProduct, placeOrder, setOrderStatus, setPaymentStatus
     }}>
       {children}

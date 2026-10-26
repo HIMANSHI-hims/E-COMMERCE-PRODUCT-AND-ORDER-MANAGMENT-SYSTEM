@@ -4,6 +4,7 @@ import Navbar from './components/Navbar.jsx'
 import Footer from './components/Footer.jsx'
 import PageHeader from './components/PageHeader.jsx'
 import AdminGate from './components/AdminGate.jsx'
+import CustomerGate from './components/CustomerGate.jsx'
 import Home from './pages/Home.jsx'
 import Products from './pages/Products.jsx'
 import PlaceOrder from './pages/PlaceOrder.jsx'
@@ -29,6 +30,9 @@ function NotFound() {
   )
 }
 
+// Shopping pages need a customer sign-in; admin pages have their own sign-in.
+const shop = (page) => <CustomerGate>{page}</CustomerGate>
+
 export default function App() {
   const { toast } = useStore()
   return (
@@ -38,10 +42,10 @@ export default function App() {
       <Navbar />
       <main id="main">
         <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/products" element={<Products />} />
-          <Route path="/order" element={<PlaceOrder />} />
-          <Route path="/orders" element={<ViewOrders />} />
+          <Route path="/" element={shop(<Home />)} />
+          <Route path="/products" element={shop(<Products />)} />
+          <Route path="/order" element={shop(<PlaceOrder />)} />
+          <Route path="/orders" element={shop(<ViewOrders />)} />
           <Route path="/inventory" element={<AdminGate><Inventory /></AdminGate>} />
           <Route path="/admin" element={<AdminGate><AdminDashboard /></AdminGate>} />
           <Route path="*" element={<NotFound />} />

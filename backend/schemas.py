@@ -1,5 +1,9 @@
+import re
 from typing import Literal, Optional
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
+
+EMAIL_RE = re.compile(r"^[^\s@]+@[^\s@]+\.[^\s@]+$")
+PHONE_RE = re.compile(r"^[6-9]\d{9}$")
 
 
 class ProductIn(BaseModel):
@@ -12,15 +16,6 @@ class ProductIn(BaseModel):
     image: str = ""
 
 
-class CustomerIn(BaseModel):
-    name: str = Field(min_length=2)
-    email: str
-    phone: str
-    address: str
-    city: str
-    pincode: str
-
-
 class OrderItemIn(BaseModel):
     productId: int
     name: str = ""
@@ -29,9 +24,42 @@ class OrderItemIn(BaseModel):
 
 
 class OrderIn(BaseModel):
-    customer: CustomerIn
     payment: Literal["UPI", "Card", "Net Banking", "Cash"]
-    total: float = 0  # ignored: the server recalculates the total
     items: list[OrderItemIn] = Field(min_length=1)
+
+
 class StatusIn(BaseModel):
-    status: str    
+    status: str
+
+
+class RegisterIn(BaseModel):
+    name: str = Field(min_length=2, max_length=100)
+    email: str = Field(max_length=100)
+    phone: str
+    address: str = Field(min_length=5, max_length=200)
+    password: str = Field(min_length=8, max_length=72)
+
+    @field_validator("name", "address")
+    @classmethod
+    def _strip(cls, v: str) -> str:
+        return v.strip()
+
+    @field_validator("email")
+    @classmethod
+    def _email(cls, v: str) -> str:
+        v = v.strip().lower()
+        if not EMAIL_RE.match(v):
+            raise ValueError("Enter a valid email address")
+        return v
+
+    @field_validator("phone")
+    @classmethod
+    def _phone(cls, v: str) -> str:
+        if not PHONE_RE.match(v):
+            raise ValueError("Enter a 10-digit mobile number")
+        return v
+
+
+class CustomerLoginIn(BaseModel):
+    email: str = Field(min_length=1, max_length=100)
+    password: str = Field(min_length=1, max_length=72)

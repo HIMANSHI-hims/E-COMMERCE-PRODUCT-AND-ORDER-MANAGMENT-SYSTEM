@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ShoppingBag, ShoppingCart, ClipboardList, Boxes, Package, Layers, Receipt, Warehouse } from 'lucide-react'
 import ActionCard from '../components/ActionCard.jsx'
@@ -5,7 +6,7 @@ import ProductCard from '../components/ProductCard.jsx'
 import StatCard from '../components/StatCard.jsx'
 import Status from '../components/Status.jsx'
 import { useStore } from '../context/StoreContext.jsx'
-import { mockStats } from '../data/mockStats.js'
+import * as api from '../services/api.js'
 
 const actions = [
   ['/products', ShoppingBag, 'Explore Products', 'Browse products, compare prices, and discover available stock.'],
@@ -16,6 +17,21 @@ const actions = [
 
 export default function Home() {
   const { products, loading, error } = useStore()
+  const [ov, setOv] = useState(null)
+  const [ovFailed, setOvFailed] = useState(false)
+
+  useEffect(() => {
+    let alive = true
+    api.getOverview()
+      .then((d) => alive && setOv(d))
+      .catch(() => alive && setOvFailed(true))
+    return () => { alive = false }
+  }, [])
+
+  // Show "…" while loading and "–" if the numbers could not be fetched.
+  const val = (v) => (ov ? v : ovFailed ? '–' : '…')
+  const pct = ov && ov.products ? Math.round((ov.in_stock / ov.products) * 100) : 0
+
   return (
     <>
       <section className="hero">
@@ -50,12 +66,14 @@ export default function Home() {
       <section className="dark band">
         <div className="container">
           <h2 className="center">Store overview</h2>
-          <p className="center small">Demonstration statistics. These are not live database values.</p>
+          <p className="center small">
+            {api.isMock ? 'Based on the sample catalogue.' : 'Live figures from the store database.'}
+          </p>
           <div className="grid four stats">
-            <StatCard icon={Package} label="Total products" value={mockStats.totalProducts} />
-            <StatCard icon={Layers} label="Product categories" value={mockStats.categories} />
-            <StatCard icon={Receipt} label="Orders placed" value={mockStats.ordersPlaced} />
-            <StatCard icon={Warehouse} label="Inventory availability" value={mockStats.availability} />
+            <StatCard icon={Package} label="Total products" value={val(ov?.products)} />
+            <StatCard icon={Layers} label="Product categories" value={val(ov?.categories)} />
+            <StatCard icon={Receipt} label="Orders placed" value={val(ov?.orders)} />
+            <StatCard icon={Warehouse} label="Inventory availability" value={val(`${pct}%`)} />
           </div>
         </div>
       </section>

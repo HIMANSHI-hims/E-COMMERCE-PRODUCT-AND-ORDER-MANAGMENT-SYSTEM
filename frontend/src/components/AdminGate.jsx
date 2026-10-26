@@ -20,7 +20,11 @@ export default function AdminGate({ children }) {
 
   // If any request finds the token expired, return to the sign-in screen.
   useEffect(() => {
-    const onExpired = () => { setState('out'); setErr('Your session ended. Please sign in again.') }
+    const onExpired = (e) => {
+  if (e.detail !== 'admin') return
+  setState('out')
+  setErr('Your session ended. Please sign in again.')
+}
     window.addEventListener('elvora-auth-expired', onExpired)
     return () => window.removeEventListener('elvora-auth-expired', onExpired)
   }, [])

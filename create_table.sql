@@ -72,3 +72,10 @@ WHERE TABLE_NAME IN (
     'PAYMENTS'
 )
 ORDER BY TABLE_NAME;
+ALTER TABLE Customers
+ADD password_hash VARCHAR2(255);
+ALTER TABLE CUSTOMERS ADD (
+    failed_attempts NUMBER(2) DEFAULT 0 NOT NULL,
+    locked_until    TIMESTAMP,
+    last_login      TIMESTAMP
+);

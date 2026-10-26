@@ -9,8 +9,8 @@ import * as api from '../services/api.js'
 import { inr, LOW_STOCK } from '../utils.js'
 
 export default function AdminDashboard() {
-  const { products, orders, stats, loadStats } = useStore()
-  useEffect(() => { loadStats().catch(() => {}) }, [loadStats])
+  const { products, orders, stats, loadStats, loadOrders } = useStore()
+useEffect(() => { loadStats().catch(() => {}); loadOrders().catch(() => {}) }, [loadStats, loadOrders])
 
   const live = orders.filter((o) => o.status !== 'Cancelled')
   const revenue = live.reduce((s, o) => s + o.total, 0)

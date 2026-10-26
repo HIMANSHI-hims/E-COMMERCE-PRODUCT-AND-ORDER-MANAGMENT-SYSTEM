@@ -4,6 +4,7 @@ import { BrowserRouter } from 'react-router-dom'
 import App from './App.jsx'
 import { StoreProvider } from './context/StoreContext.jsx'
 import { CartProvider } from './context/CartContext.jsx'
+import { CustomerProvider } from './context/CustomerContext.jsx'
 import './styles.css'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
@@ -11,7 +12,9 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     <BrowserRouter>
       <StoreProvider>
         <CartProvider>
-          <App />
+          <CustomerProvider>
+            <App />
+          </CustomerProvider>
         </CartProvider>
       </StoreProvider>
     </BrowserRouter>

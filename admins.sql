@@ -10,3 +10,5 @@ CREATE TABLE ADMINS (
     created_at      DATE DEFAULT SYSDATE NOT NULL
 );
 CREATE SEQUENCE admins_seq START WITH 1;
+SELECT USER FROM dual;
+SELECT owner, table_name FROM all_tables WHERE table_name = 'ADMINS';

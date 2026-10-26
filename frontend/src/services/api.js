@@ -41,7 +41,13 @@ async function request(path, options = {}, who = 'none') {
     let detail = ''
     try { detail = (await res.json()).detail } catch { /* no JSON body */ }
     const msg = Array.isArray(detail)
-      ? detail.map((d) => String(d.msg).replace(/^Value error, /, '')).join(' ')
+      ? detail
+          .map((d) => {
+            const field = (d.loc || []).slice(1).join('.')
+            const text = String(d.msg).replace(/^Value error, /, '')
+            return field ? `${field}: ${text}` : text
+          })
+          .join(' ')
       : detail
     throw new Error(typeof msg === 'string' && msg ? msg : `Request failed (${res.status})`)
   }

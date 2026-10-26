@@ -3,7 +3,7 @@ from typing import Literal, Optional
 from pydantic import BaseModel, Field, field_validator
 
 EMAIL_RE = re.compile(r"^[^\s@]+@[^\s@]+\.[^\s@]+$")
-PHONE_RE = re.compile(r"^[6-9]\d{9}$")
+PHONE_RE = re.compile(r"[0-9]{10}")
 
 
 class ProductIn(BaseModel):
@@ -13,7 +13,12 @@ class ProductIn(BaseModel):
     brand: str = Field(min_length=1)
     price: float = Field(gt=0)
     stock: int = Field(ge=0)
-    image: str = ""
+    image: Optional[str] = ""
+
+    @field_validator("image", mode="before")
+    @classmethod
+    def _image(cls, v):
+        return (v or "").strip()
 
 
 class OrderItemIn(BaseModel):
@@ -55,7 +60,8 @@ class RegisterIn(BaseModel):
     @field_validator("phone")
     @classmethod
     def _phone(cls, v: str) -> str:
-        if not PHONE_RE.match(v):
+        v = v.strip()
+        if not PHONE_RE.fullmatch(v):
             raise ValueError("Enter a 10-digit mobile number")
         return v
 

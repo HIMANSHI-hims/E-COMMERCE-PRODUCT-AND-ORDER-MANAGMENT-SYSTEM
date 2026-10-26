@@ -30,7 +30,15 @@ export default function ProductManager({ allowDelete = false }) {
     setErrs(er)
     if (Object.keys(er).length) return
     try {
-      await saveProduct({ ...form, name: form.name.trim(), category: form.category.trim(), brand: form.brand.trim(), price: Number(form.price), stock: Number(form.stock) })
+      await saveProduct({
+        ...form,
+        name: form.name.trim(),
+        category: form.category.trim(),
+        brand: form.brand.trim(),
+        price: Number(form.price),
+        stock: Number(form.stock),
+        image: (form.image ?? '').trim()
+      })
       notify(form.id ? 'Product updated.' : 'Product added.')
       setForm(null)
     } catch (x) { notify(x.message, 'err') }
@@ -86,7 +94,7 @@ export default function ProductManager({ allowDelete = false }) {
                   <td>{p.id}</td><td>{p.name}</td><td>{p.category}</td><td>{p.brand}</td><td>{inr(p.price)}</td>
                   <td>{p.stock}{p.stock <= LOW_STOCK && <span className="pill Pending ml">Low stock</span>}</td>
                   <td className="actions">
-                    <button className="btn btn-outline btn-sm" aria-label={`Edit ${p.name}`} onClick={() => { setErrs({}); setForm(p) }}><Pencil size={14} /> Edit</button>
+                    <button className="btn btn-outline btn-sm" aria-label={`Edit ${p.name}`} onClick={() => { setErrs({}); setForm({ ...p, image: p.image ?? '' }) }}><Pencil size={14} /> Edit</button>
                     {allowDelete && <button className="btn btn-outline btn-sm" aria-label={`Delete ${p.name}`} onClick={() => del(p)}><Trash2 size={14} /> Delete</button>}
                   </td>
                 </tr>

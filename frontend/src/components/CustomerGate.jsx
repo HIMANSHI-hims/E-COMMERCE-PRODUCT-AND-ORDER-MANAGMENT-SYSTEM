@@ -24,7 +24,7 @@ function Welcome() {
     if (!EMAIL.test(f.email.trim())) er.email = 'Enter a valid email address'
     if (mode === 'register') {
       if (f.name.trim().length < 2) er.name = 'Enter your full name'
-      if (!/^[6-9]\d{9}$/.test(f.phone)) er.phone = 'Enter a 10-digit mobile number'
+      if (!/^\d{10}$/.test(f.phone.trim())) er.phone = 'Enter a 10-digit mobile number'
       if (f.address.trim().length < 5) er.address = 'Enter your delivery address'
       if (f.password.length < 8) er.password = 'Use at least 8 characters'
       else if (f.password.length > 72) er.password = 'Use 72 characters or fewer'
@@ -38,10 +38,10 @@ function Welcome() {
     setBusy(true)
     try {
       if (mode === 'register') {
-        await register({ name: f.name.trim(), email: f.email.trim(), phone: f.phone, address: f.address.trim(), password: f.password })
-      } else {
-        await signIn(f.email.trim(), f.password)
-      }
+  await register({ name: f.name.trim(), email: f.email.trim(), phone: f.phone.trim(), address: f.address.trim(), password: f.password })
+} else {
+  await signIn(f.email.trim(), f.password)
+}
     } catch (x) {
       setFormErr(x.message)
     } finally {

@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { Routes, Route, useLocation, Link } from 'react-router-dom'
-import Navbar from './components/Navbar.jsx'
+import Navbar from './components/NavBar.jsx'
 import Footer from './components/Footer.jsx'
 import PageHeader from './components/PageHeader.jsx'
 import AdminGate from './components/AdminGate.jsx'

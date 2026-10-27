@@ -1,38 +1,19 @@
 # ELVORA — E-Commerce Product and Order Management System
 
-**ELVORA** is a database-driven e-commerce management application designed to manage products, inventory, customers, orders, and payments through a unified interface.
+ELVORA is a database-driven e-commerce application developed as a Database Management Systems (DBMS) project. It provides a platform for managing products, customers, orders, inventory, and payments through a web-based interface backed by an Oracle relational database.
 
-The project combines a modern web frontend with a Python backend and an Oracle relational database to demonstrate practical database management concepts and real-world e-commerce workflows.
+The project demonstrates the practical application of SQL, database design, integrity constraints, joins, subqueries, functions, views, and PL/SQL concepts in an e-commerce environment.
 
-> **Project Status:** In Development — Approximately 60% Complete
+## Features
 
-## Overview
-
-ELVORA aims to provide an integrated platform for managing e-commerce operations, with a focus on data consistency, inventory control, order processing, and efficient database operations.
-
-The application is being developed as an academic DBMS project, connecting database concepts with a functional web application.
-
-## Key Features
-
-### Currently Developed
-- Modern e-commerce frontend interface.
-- Product inventory containing approximately 500 products.
-- Oracle SQL database schema and sample data.
-- SQL scripts demonstrating DDL, DML, constraints, functions, operators, aggregate functions, joins, subqueries, and validation queries.
-- Initial project structure for frontend and backend integration.
-
-### Planned / In Progress
-- Live product retrieval from Oracle Database.
-- Product creation, editing, searching, filtering, and deletion.
-- Inventory updates and low-stock alerts.
-- Customer management.
-- Order placement and order history.
-- Order status management and cancellation.
-- Payment tracking and outstanding balance calculation.
-- Admin dashboard with database-driven statistics and reports.
-- Input validation, transaction handling, and error management.
-
-*Feature availability will be updated as implementation and testing progress.*
+- **Product Management:** View and manage product information, prices, categories, and stock quantities.
+- **Customer Management:** Maintain customer information and delivery details.
+- **Order Management:** Place orders and maintain order and order-item records.
+- **Order History:** Retrieve order information through the Oracle `Order_History_View`.
+- **Payment Management:** Store payment details, methods, amounts, and payment statuses.
+- **Inventory Validation:** Validate stock availability and support inventory consistency.
+- **Database Validation:** Apply constraints and validation logic to maintain data integrity.
+- **SQL and PL/SQL Demonstrations:** Implement database functions, joins, subqueries, aggregate operations, views, and explicit cursors.
 
 ## Technology Stack
 
@@ -41,71 +22,118 @@ The application is being developed as an academic DBMS project, connecting datab
 | Frontend | React.js, Vite |
 | Backend | Python, FastAPI |
 | Database | Oracle Database |
-| Database Driver | Python `oracledb` |
-| API Server | Uvicorn |
-| Environment Configuration | `python-dotenv` |
-
-## Database Design
-
-The database is designed around the following core entities:
-
-- **CUSTOMERS** — Customer information and contact details.
-- **CATEGORIES** — Product category information.
-- **PRODUCTS** — Product details, pricing, and inventory.
-- **ORDERS** — Customer order records.
-- **ORDER_ITEMS** — Products and quantities associated with each order.
-- **PAYMENTS** — Payment records associated with orders.
-
-Primary keys, foreign keys, and other constraints help maintain relational integrity. The schema will be reused as the application evolves.
+| Database Language | SQL and PL/SQL |
+| API Communication | HTTP/REST |
 
 ## System Architecture
 
-The planned application follows a three-layer architecture:
+ELVORA follows a frontend–backend–database architecture.
 
-1. **Frontend Layer:** React provides the user interface for viewing products and managing e-commerce operations.
-2. **Backend Layer:** FastAPI exposes REST API endpoints, validates requests, and handles business logic.
-3. **Database Layer:** Oracle stores persistent product, customer, order, inventory, and payment data.
+```text
+                 USER
+                   |
+                   v
+          React + Vite Frontend
+                   |
+                   v
+             FastAPI Backend
+                   |
+                   v
+             Oracle Database
+                   |
+                   v
+       Products, Customers, Orders,
+       Order Items, Payments, Views
+```
 
-The frontend communicates with the backend through HTTP requests. The backend interacts with Oracle using the Python `oracledb` driver.
+1. **Frontend:** Provides the user interface for browsing products, managing the cart, placing orders, and viewing order information.
+2. **Backend:** Handles application requests, communicates with Oracle, and implements order-processing logic.
+3. **Database:** Stores relational data and enforces database rules through constraints, SQL operations, and other database objects.
+
+## Database Design
+
+The database is designed around the core entities of an e-commerce application.
+
+- **Customers:** Stores customer details.
+- **Categories:** Organizes products into categories.
+- **Products:** Stores product details, prices, and inventory quantities.
+- **Orders:** Records customer orders and their totals.
+- **Order Items:** Stores the products and quantities associated with each order.
+- **Payments:** Maintains payment details and payment status.
+
+Relationships between these entities support customer orders containing multiple products and the corresponding payment records.
+
+## SQL and PL/SQL Concepts Implemented
+
+The project demonstrates the following DBMS concepts:
+
+- **DDL:** `CREATE`, `ALTER`, and other schema-management operations.
+- **DML:** `INSERT`, `UPDATE`, `DELETE`, and data retrieval.
+- **Integrity Constraints:** Primary keys, foreign keys, unique constraints, `NOT NULL`, and check constraints.
+- **Joins:** Combining related records across tables.
+- **Subqueries:** Using nested queries to retrieve and analyze data.
+- **SQL Functions:** Character, numeric, date, conversion, and NULL-handling functions.
+- **Aggregate Functions:** `COUNT`, `SUM`, `AVG`, `MAX`, and `MIN`.
+- **Conditional Expressions:** `CASE` expressions.
+- **Views:** `Order_History_View` for retrieving order-history information.
+- **Explicit Cursors:** Fetching query results one row at a time in PL/SQL.
+- **Indexes:** Index-related database scripts for query optimization.
+- **Validation Logic:** SQL scripts and database logic for order, payment, and inventory validation.
 
 ## Project Structure
-
-The project is organized into separate frontend, backend, and database components. The structure may evolve during development.
 
 ```text
 ELVORA/
 ├── frontend/
-│   ├── src/
-│   ├── public/
-│   ├── package.json
-│   └── .env
+│   └── src/
+│       ├── components/
+│       ├── context/
+│       ├── pages/
+│       └── services/
+│
 ├── backend/
 │   ├── main.py
-│   ├── requirements.txt
-│   └── .env
-├── database/
-│   ├── create_table.sql
-│   ├── insert_data.sql
-│   ├── ddl_dml.sql
-│   ├── functions.sql
-│   ├── operators_aggregates.sql
-│   ├── joins_subqueries.sql
-│   ├── inventory_validation.sql
-│   ├── order_validation.sql
-│   └── payment_validation.sql
-└── README.md
+│   ├── db.py
+│   └── routers/
+│       └── orders.py
+│
+├── admins.sql
+├── ALTER.sql
+├── create_indexes.sql
+├── create_table.sql
+├── customer_order_details.sql
+├── ddl_dml.sql
+├── e1.sql
+├── functions.sql
+├── image.sql
+├── index_correction.sql
+├── indexes.sql
+├── insert_data.sql
+├── inventory_audit.sql
+├── inventory_validation.sql
+├── joins_subqueries.sql
+├── operators_aggregates.sql
+├── order_validation.sql
+├── payment_trigger.sql
+├── payment_validation.sql
+├── reset_and_update.sql
+├── SUBQUEIRES.sql
+├── view_data.sql
+└── VIEW.SQL
 ```
 
-*Adjust the paths to match the actual repository structure.*
+*Note: Update the structure if your repository has additional files or a different folder arrangement.*
 
-## Setup and Installation
+## Prerequisites
 
-### Prerequisites
+Install the following before running the application:
 
-- Python 3.10 or later.
-- Node.js and npm.
-- Oracle Database with the ELVORA schema configured.
-- Git.
+- Node.js and npm
+- Python 3
+- Oracle Database with an accessible database service
+- Oracle SQL Developer or another Oracle-compatible SQL client
+
+## Installation and Setup
 
 ### 1. Clone the repository
 
@@ -114,97 +142,104 @@ git clone <YOUR_GITHUB_REPOSITORY_URL>
 cd ELVORA
 ```
 
-### 2. Set up the backend
+Replace the placeholder with your actual GitHub repository URL.
 
-```bash
-cd backend
-python -m venv .venv
-```
+### 2. Configure the Oracle database
 
-Activate the virtual environment in Windows PowerShell:
+1. Connect to your Oracle database using your configured service.
+2. Execute the SQL scripts in the appropriate order.
+3. Create the tables and constraints before inserting sample data.
+4. Configure the backend database connection using your Oracle credentials and service name.
 
-```powershell
-.\.venv\Scripts\Activate.ps1
-```
-
-Install the dependencies:
-
-```bash
-python -m pip install fastapi uvicorn oracledb python-dotenv
-```
-
-Configure the backend environment variables using a local `.env` file. Use the actual Oracle credentials and connection string for your environment.
+**Important:** Review scripts such as `reset_and_update.sql` before executing them, because reset scripts may modify or remove existing data.
 
 ### 3. Start the backend
 
-From the backend directory, run:
+Open a terminal in the backend directory:
 
 ```bash
-python -m uvicorn main:app --reload
+cd backend
+python -m venv venv
 ```
 
-The API should be available at:
+Activate the virtual environment.
 
-- Backend: `http://localhost:8000`
-- Interactive API documentation: `http://localhost:8000/docs`
+**Windows PowerShell:**
 
-### 4. Set up the frontend
+```powershell
+.\venv\Scripts\Activate.ps1
+```
 
-From the frontend directory:
+Install the backend dependencies:
 
 ```bash
+pip install fastapi uvicorn oracledb
+```
+
+If the repository includes a `requirements.txt`, use it instead:
+
+```bash
+pip install -r requirements.txt
+```
+
+Start the FastAPI server:
+
+```bash
+uvicorn main:app --reload
+```
+
+The backend will normally be available at `http://127.0.0.1:8000`.
+
+API documentation is normally available at `http://127.0.0.1:8000/docs`.
+
+### 4. Configure and start the frontend
+
+Open another terminal:
+
+```bash
+cd frontend
 npm install
 ```
 
-Create a frontend `.env` file:
+Create or update the frontend `.env` file:
 
-```dotenv
-VITE_API_BASE_URL=http://localhost:8000
+```env
+VITE_API_BASE_URL=http://127.0.0.1:8000
 ```
 
-Start the development server:
+Start the frontend:
 
 ```bash
 npm run dev
 ```
 
-Use the local URL printed by Vite to open the application.
+Vite will display the local development URL, normally `http://localhost:5173`.
 
-**Note:** These commands assume the corresponding files and scripts exist. Complete the Oracle connection configuration and API endpoints before expecting database-backed features to work.
+### 5. Verify the application
 
-## Database Concepts Demonstrated
+- Confirm that the Oracle database connection succeeds.
+- Verify that the backend can communicate with Oracle.
+- Open the frontend in your browser.
+- Test product browsing, cart operations, order placement, payment-related functionality, and order history.
+- Check the database to confirm that the expected records are stored correctly.
 
-- Data Definition Language (DDL).
-- Data Manipulation Language (DML).
-- Primary and foreign key constraints.
-- Unique, not-null, check, and other applicable constraints.
-- SQL functions and aggregate operations.
-- Joins and subqueries.
-- Inventory and order validation.
-- Referential integrity and relational database design.
-- Transaction management and data consistency as backend operations are implemented.
+## Learning Outcomes
 
-## Future Enhancements
+This project provides practical experience with:
 
-- Complete integration between the frontend, FastAPI, and Oracle.
-- Reliable order processing with transactional inventory updates.
-- Enhanced analytics and reporting.
-- Product image integration.
-- Improved validation, security, and testing.
-- Deployment for accessible demonstrations.
+- Relational database design and entity relationships.
+- SQL queries and database integrity constraints.
+- Backend integration with an Oracle database.
+- REST API development using FastAPI.
+- Frontend development using React and Vite.
+- Database-driven e-commerce workflows.
+- PL/SQL programming and data validation.
 
-## Security Notes
+## Team Members
 
-- Store Oracle credentials in backend environment variables.
-- Do not commit `.env` files or secrets to GitHub.
-- Keep database credentials out of frontend code.
-- Validate user input on the backend.
-- Use parameterized SQL queries.
-- Restrict destructive database operations and protect customer data.
+- **Himanshi Srivastava**
+- **Avantika Pratyush**
 
 ## Project Purpose
 
-ELVORA demonstrates how relational database concepts can be integrated into a full-stack application to support realistic e-commerce product and order management workflows.
-
-**Status:** Active Development
-
+ELVORA demonstrates how database concepts can be integrated into a full-stack application to manage a practical business workflow. It combines relational database operations with backend processing and a user-facing interface to illustrate the role of DBMS concepts in real-world software systems.

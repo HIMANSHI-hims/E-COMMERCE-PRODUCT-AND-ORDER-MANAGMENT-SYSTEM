@@ -7,6 +7,7 @@ import ProductManager from '../components/ProductManager.jsx'
 import { useStore } from '../context/StoreContext.jsx'
 import * as api from '../services/api.js'
 import { inr, LOW_STOCK } from '../utils.js'
+import InventoryAuditHistory from '../components/InventoryAuditHistory.jsx'
 
 export default function AdminDashboard() {
   const { products, orders, stats, loadStats, loadOrders } = useStore()
@@ -60,6 +61,8 @@ useEffect(() => { loadStats().catch(() => {}); loadOrders().catch(() => {}) }, [
       </div>
 
       <ProductManager allowDelete />
+      <ProductManager allowDelete />
+      <InventoryAuditHistory />
     </div>
   )
 }

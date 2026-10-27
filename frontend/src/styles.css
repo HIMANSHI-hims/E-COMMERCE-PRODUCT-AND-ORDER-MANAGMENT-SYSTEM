@@ -171,3 +171,18 @@ fieldset{border:0;padding:0}
 .pay-meta span:first-child{color:var(--muted)}
 .pill.Completed{background:rgba(137,145,122,.28)}
 .pill.Failed{background:rgba(138,47,47,.12);color:#8a2f2f}
+.tw td.wrap{white-space:normal;min-width:240px}
+.tw td.wrap{white-space:normal;min-width:200px}
+.delta{font-weight:600}
+.delta.up{color:#3f5a2b}
+.delta.down{color:#8a2f2f}
+.audit-foot{margin-top:1rem}
+/* subqueries */
+.sq-list{display:grid;gap:1.5rem;margin-top:1.5rem}
+.sq{padding:1.5rem;display:flex;flex-direction:column;gap:1rem;border-top:3px solid var(--champagne)}
+.sq-head{display:flex;justify-content:space-between;align-items:flex-start;gap:.75rem;flex-wrap:wrap}
+.sq-head h3{font-size:1.3rem}
+.sq-actions{display:flex;gap:.6rem;flex-wrap:wrap}
+.sq-meta{font-size:.85rem;color:var(--muted);margin-bottom:.5rem}
+.code{margin:0;padding:1rem 1.1rem;background:var(--charcoal);color:var(--ivory);border-radius:var(--r);overflow-x:auto;font-size:.82rem;line-height:1.65;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+.code code{font-family:inherit;white-space:pre}

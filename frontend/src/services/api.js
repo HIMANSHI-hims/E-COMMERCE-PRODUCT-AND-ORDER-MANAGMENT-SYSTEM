@@ -106,3 +106,10 @@ export const saveProduct = (p, isNew) =>
 export const deleteProduct = (id) =>
   useMock ? wait({}) : request(`/products/${id}`, { method: 'DELETE' }, 'admin')
 export const getAdminStats = () => (useMock ? wait({ customers: 42 }) : request('/admin/stats', {}, 'admin'))
+export const getInventoryAudit = ({ limit = 25, offset = 0, q = '' } = {}) =>
+  useMock
+    ? wait({ total: 0, rows: [] })
+    : request(`/admin/inventory-audit?${new URLSearchParams({ limit, offset, q })}`, {}, 'admin')
+// Admin: predefined subqueries (the browser sends only a query id)
+export const getSubqueries = () => request('/subqueries', {}, 'admin')
+export const runSubquery = (id) => request(`/subqueries/${id}/run`, { method: 'POST' }, 'admin')    

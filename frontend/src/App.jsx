@@ -13,6 +13,7 @@ import ViewOrders from './pages/ViewOrders.jsx'
 import Inventory from './pages/Inventory.jsx'
 import AdminDashboard from './pages/AdminDashboard.jsx'
 import { useStore } from './context/StoreContext.jsx'
+import Subqueries from './pages/Subqueries.jsx'
 
 function ScrollTop() {
   const { pathname } = useLocation()
@@ -50,6 +51,7 @@ export default function App() {
           <Route path="/orders" element={shop(<ViewOrders />)} />
           <Route path="/inventory" element={<AdminGate><Inventory /></AdminGate>} />
           <Route path="/admin" element={<AdminGate><AdminDashboard /></AdminGate>} />
+          <Route path="/subqueries" element={<AdminGate><Subqueries /></AdminGate>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>

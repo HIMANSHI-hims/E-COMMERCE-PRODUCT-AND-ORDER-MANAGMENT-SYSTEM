@@ -2,7 +2,7 @@ import oracledb
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from routers import products, orders, admin, login, public, account
+from routers import products, orders, admin, login, public, account, subqueries
 
 app = FastAPI(title="ELVORA API")
 
@@ -26,6 +26,8 @@ app.include_router(products.router)
 app.include_router(orders.router)
 app.include_router(admin.router)
 app.include_router(public.router)
+app.include_router(admin.router)
+app.include_router(subqueries.router)
 
 
 @app.get("/")

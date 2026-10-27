@@ -79,3 +79,38 @@ ALTER TABLE CUSTOMERS ADD (
     locked_until    TIMESTAMP,
     last_login      TIMESTAMP
 );
+-- Step 1: Add customer_id and customer_name columns
+ALTER TABLE Order_Items
+ADD (
+    customer_id NUMBER(5),
+    customer_name VARCHAR2(100)
+);
+
+-- Step 2: Populate customer details from Orders and Customers
+UPDATE Order_Items oi
+SET (customer_id, customer_name) = (
+    SELECT o.customer_id, c.customer_name
+    FROM Orders o
+    JOIN Customers c
+        ON o.customer_id = c.customer_id
+    WHERE o.order_id = oi.order_id
+);
+
+-- Step 3: Save the changes
+COMMIT;
+
+-- Step 4: Display the complete table
+SELECT *
+FROM Order_Items
+ORDER BY order_item_id;
+ALTER TABLE Orders
+ADD customer_name VARCHAR2(100);
+
+UPDATE Orders o
+SET customer_name = (
+    SELECT c.customer_name
+    FROM Customers c
+    WHERE c.customer_id = o.customer_id
+);
+
+COMMIT;

@@ -14,6 +14,8 @@ import Inventory from './pages/Inventory.jsx'
 import AdminDashboard from './pages/AdminDashboard.jsx'
 import { useStore } from './context/StoreContext.jsx'
 import Subqueries from './pages/Subqueries.jsx'
+import FormattedProducts from "./components/FormattedProducts";
+import CursorSearch from './pages/cursorSearch.jsx'
 
 function ScrollTop() {
   const { pathname } = useLocation()
@@ -46,12 +48,14 @@ export default function App() {
         <Routes>
           <Route path="/" element={shop(<Home />)} />
           <Route path="/products" element={shop(<Products />)} />
+          <Route path="/formatted-products" element={shop(<FormattedProducts />)} />
           <Route path="/order" element={shop(<PlaceOrder />)} />
           <Route path="/pay/:id" element={shop(<PayOrder />)} />
           <Route path="/orders" element={shop(<ViewOrders />)} />
           <Route path="/inventory" element={<AdminGate><Inventory /></AdminGate>} />
           <Route path="/admin" element={<AdminGate><AdminDashboard /></AdminGate>} />
           <Route path="/subqueries" element={<AdminGate><Subqueries /></AdminGate>} />
+          <Route path="/cursor-search" element={<CursorSearch />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>

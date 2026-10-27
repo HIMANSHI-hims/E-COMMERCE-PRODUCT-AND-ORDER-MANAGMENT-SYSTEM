@@ -4,7 +4,7 @@ import { ShoppingCart, Menu, X } from 'lucide-react'
 import { useCart } from '../context/CartContext.jsx'
 import { useCustomer } from '../context/CustomerContext.jsx'
 
-const links = [['/', 'Home'], ['/products', 'Products'], ['/order', 'Place Order'], ['/orders', 'View Orders'], ['/inventory', 'Inventory'], ['/subqueries', 'Subqueries']]
+const links = [['/', 'Home'], ['/products', 'Products'], ['/order', 'Place Order'], ['/orders', 'View Orders'], ['/inventory', 'Inventory'], ['/subqueries', 'Subqueries'], ['/cursor-search', 'Cursor Search']]
 
 export default function Navbar() {
   const [open, setOpen] = useState(false)

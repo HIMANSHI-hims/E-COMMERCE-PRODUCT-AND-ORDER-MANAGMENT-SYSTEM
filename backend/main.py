@@ -3,6 +3,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from routers import products, orders, admin, login, public, account, subqueries
+from fastapi import Depends
+from db import get_conn, fetch_all
 
 app = FastAPI(title="ELVORA API")
 
@@ -26,10 +28,23 @@ app.include_router(products.router)
 app.include_router(orders.router)
 app.include_router(admin.router)
 app.include_router(public.router)
-app.include_router(admin.router)
 app.include_router(subqueries.router)
 
 
 @app.get("/")
 def health():
     return {"status": "ok"}
+@app.get("/api/products/formatted")
+def get_formatted_products(conn=Depends(get_conn)):
+    sql = """
+        SELECT
+            product_id,
+            product_name,
+            ROUND(price, 2) AS rounded_price,
+            NVL(brand, 'Unknown') AS brand_name,
+            SUBSTR(product_name, 1, 3) AS short_name,
+            LENGTH(product_name) AS name_length
+        FROM PRODUCTS
+        ORDER BY product_id
+    """
+    return fetch_all(conn, sql)

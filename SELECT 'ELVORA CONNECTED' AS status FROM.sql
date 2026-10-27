@@ -1,0 +1,1 @@
+SELECT 'ELVORA CONNECTED' AS status FROM dual;

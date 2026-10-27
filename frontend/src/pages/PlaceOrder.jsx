@@ -32,7 +32,9 @@ export default function PlaceOrder() {
     setBusy(true)
     try {
       const order = await placeOrder({
-        payment: pay, total: subtotal, customer: { name: customer?.name || 'Guest' },
+        payment: pay,
+total: Number(Number(subtotal).toFixed(2)),
+customer: { name: customer?.name || 'Guest' },
         items: items.map((i) => ({ productId: i.id, name: i.name, qty: i.qty, price: i.price }))
       })
       clear()

@@ -1,0 +1,121 @@
+/* frontend/src/pages/CursorSearch.css */
+.cs-page {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 48px 24px 80px;
+}
+
+.cs-sub {
+  color: #292b28;
+  opacity: 0.8;
+  margin-bottom: 24px;
+}
+
+.cs-form {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+
+.cs-form input,
+.cs-form select {
+  padding: 12px 14px;
+  border: 1px solid #d9d4c7;
+  border-radius: 8px;
+  background: #fff;
+  font: inherit;
+}
+
+.cs-form input {
+  flex: 1;
+  min-width: 220px;
+}
+
+.cs-form button {
+  padding: 12px 22px;
+  border: none;
+  border-radius: 8px;
+  background: #292b28;
+  color: #fff;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.cs-form button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.cs-error {
+  color: #b00020;
+  margin-bottom: 16px;
+}
+
+.cs-log {
+  background: #f5f1e8;
+  border: 1px solid #d6be96;
+  border-radius: 10px;
+  padding: 16px 20px;
+  margin-bottom: 24px;
+}
+
+.cs-log h3 {
+  margin: 0 0 8px;
+}
+
+.cs-log ol {
+  margin: 0 0 12px;
+  padding-left: 20px;
+  line-height: 1.8;
+}
+
+.cs-log code {
+  background: #fff;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.9em;
+}
+
+.cs-log pre {
+  background: #292b28;
+  color: #f5f1e8;
+  padding: 16px;
+  border-radius: 8px;
+  overflow-x: auto;
+  font-size: 0.82em;
+  line-height: 1.5;
+}
+
+.cs-link {
+  background: none;
+  border: none;
+  padding: 0;
+  color: #292b28;
+  text-decoration: underline;
+  cursor: pointer;
+  font: inherit;
+}
+
+.cs-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95em;
+}
+
+.cs-table th,
+.cs-table td {
+  text-align: left;
+  padding: 10px 12px;
+  border-bottom: 1px solid #e6e1d4;
+}
+
+.cs-table th {
+  background: #f5f1e8;
+}
+
+.cs-table td:nth-child(4),
+.cs-table th:nth-child(4) {
+  white-space: nowrap;
+}

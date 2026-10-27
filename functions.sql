@@ -30,3 +30,12 @@ FROM PRODUCTS;
 -- 8. SUBSTR: Display the first three characters
 SELECT product_name, SUBSTR(product_name, 1, 3) AS short_name
 FROM PRODUCTS;
+SELECT o.order_id,
+       o.total_amount,
+       ROUND(o.total_amount)                      AS payable_amount,
+       ROUND(o.total_amount) - o.total_amount     AS rounding_adjustment,
+       p.method,
+       p.status
+FROM   ORDERS o
+JOIN   PAYMENTS p ON p.order_id = o.order_id
+WHERE  o.order_id = :order_id;
